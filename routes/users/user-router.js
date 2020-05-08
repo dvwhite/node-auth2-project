@@ -1,13 +1,17 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 // Db helpers, utils
 const { find, findBy } = require("./user-model");
 const { sanitizeUser } = require("../../utils/utils");
 
-router.get("/", async (req, res) => {
+router.get("/", decodeJWT, async (req, res) => {
   try {
-    const users = await find();
+    const decoded = req.token;
+    console.log("decoded2:", decoded)
+    const dept = decoded.userDepartment;
+    const users = await find(dept);
     res.status(200).json({
       message: "Success",
       validation: [],
@@ -67,4 +71,16 @@ function errDetail(res, err) {
   });
 }
 
+async function decodeJWT(req, res, next) {
+  const { token } = req.cookies;
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json(authError);
+    } 
+    console.log("decoded:", decoded)
+    req.token = decoded;
+    next();
+  })
+}
 module.exports = router;

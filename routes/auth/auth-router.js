@@ -52,9 +52,10 @@ router.post("/login", validateUsername, async (req, res) => {
     // Create the JWT token
     const payload = {
       userId: user.id,
-      userRole: user.role_id
+      userRole: user.role_id,
+      userDepartment: user.department
     };
-    const token = jwt.sign(payload, process.env.JWT_SECRET);
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '120m' });
     res.cookie("token", token);
 
     // Send the data back, including the token

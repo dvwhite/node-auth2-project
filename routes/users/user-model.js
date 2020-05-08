@@ -9,8 +9,9 @@ module.exports = {
   insert
 };
 
-function find() {
+function find(dept) {
   return db("users")
+    .where({ department: dept })
     .then(users => {
       return users.map(user => sanitizeUser(user))
     });
@@ -26,7 +27,7 @@ function insert(user) {
   return db("users")
     .insert(user)
     .then(async ids => {
-      const user = await findBy("id", ids[0]);
+      const user = await findBy({ id: ids[0] });
       return sanitizeUser(user);
     });
 };
