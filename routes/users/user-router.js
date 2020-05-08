@@ -8,9 +8,7 @@ const { sanitizeUser } = require("../../utils/utils");
 
 router.get("/", decodeJWT, async (req, res) => {
   try {
-    const decoded = req.token;
-    console.log("decoded2:", decoded)
-    const dept = decoded.userDepartment;
+    const dept = req.token.userDepartment;
     const users = await find(dept);
     res.status(200).json({
       message: "Success",
@@ -78,7 +76,6 @@ async function decodeJWT(req, res, next) {
     if (err) {
       return res.status(401).json(authError);
     } 
-    console.log("decoded:", decoded)
     req.token = decoded;
     next();
   })
